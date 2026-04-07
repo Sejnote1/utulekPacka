@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Přihlášení</title>
+</head>
+<body>
+<h2>Přihlášení</h2>
+<form th:action="@{/login}" method="post">
+    <label for="username">Email:</label>
+    <input type="text" id="username" name="username" required />
+    <br/>
+    <label for="password">Heslo:</label>
+    <input type="password" id="password" name="password" required />
+    <br/>
+    <button type="submit">Přihlásit</button>
+</form>
+<p th:if="${param.error}">Neplatné uživatelské jméno nebo heslo.</p>
+<p th:if="${param.logout}">Byli jste odhlášeni.</p>
+</body>
+</html>

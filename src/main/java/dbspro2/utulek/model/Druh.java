@@ -19,6 +19,12 @@ public class Druh {
     @OneToMany(mappedBy = "druh", fetch = FetchType.LAZY)
     private List<Plemeno> plemena;
 
+    public Druh() {}
+
+    public Druh(String nazev) {
+        this.nazev = nazev;
+    }
+
     public Integer getIdDruh() {
         return idDruh;
     }

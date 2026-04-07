@@ -19,6 +19,12 @@ public class DuvodZamitnuti {
     @OneToMany(mappedBy = "duvod", fetch = FetchType.LAZY)
     private List<AdopceZamitnuti> zamitnuti;
 
+    public DuvodZamitnuti() {}
+
+    public DuvodZamitnuti(String popis) {
+        this.popis = popis;
+    }
+
     public Integer getIdDuvod() {
         return idDuvod;
     }

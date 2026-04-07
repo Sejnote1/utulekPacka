@@ -1,8 +1,15 @@
 package dbspro2.utulek.repository;
-import dbspro2.utulek.model.testTable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface testRepo extends JpaRepository<testTable, Long> {
+import dbspro2.utulek.model.testTable;
+import java.util.List;
+import java.util.ArrayList;
+
+/**
+ * Testovací repozitář – nahrazen stub implementací
+ * kvůli odstranění @Entity z testTable.
+ */
+public class testRepo {
+    public List<testTable> findAll() {
+        return new ArrayList<>();
+    }
 }

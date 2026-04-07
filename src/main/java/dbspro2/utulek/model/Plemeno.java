@@ -22,6 +22,13 @@ public class Plemeno {
     @OneToMany(mappedBy = "plemeno", fetch = FetchType.LAZY)
     private List<Zvire> zvirata;
 
+    public Plemeno() {}
+
+    public Plemeno(String nazev, Druh druh) {
+        this.nazev = nazev;
+        this.druh = druh;
+    }
+
     public Integer getIdPlemeno() {
         return idPlemeno;
     }

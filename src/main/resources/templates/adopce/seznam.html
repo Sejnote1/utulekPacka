@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/><title>Adopce – Zdravá Packa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+        nav { background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .nav-brand { font-size: 20px; font-weight: 700; color: #f8fafc; }
+        .nav-links { display: flex; gap: 4px; }
+        .nav-links a { color: rgba(255,255,255,0.65); text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 14px; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.1); color: #fff; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .nav-user { color: rgba(255,255,255,0.5); font-size: 13px; }
+        .btn-logout { padding: 7px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: rgba(255,255,255,0.7); font-size: 13px; text-decoration: none; }
+        main { padding: 40px 32px; max-width: 1200px; margin: 0 auto; }
+        .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+        h1 { font-size: 26px; font-weight: 700; }
+        .btn-primary { background: linear-gradient(135deg, #e94560, #c62a47); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .filters { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 18px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: rgba(255,255,255,0.6); font-size: 14px; text-decoration: none; transition: all 0.2s; }
+        .filter-btn:hover, .filter-btn.active { background: rgba(255,255,255,0.1); color: #fff; }
+        .table-wrap { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: rgba(255,255,255,0.06); padding: 14px 16px; text-align: left; font-size: 12px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 14px; vertical-align: middle; }
+        tr:hover td { background: rgba(255,255,255,0.03); }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .badge-yellow { background: rgba(234,179,8,0.15); color: #fde047; }
+        .badge-green  { background: rgba(34,197,94,0.15); color: #86efac; }
+        .badge-red    { background: rgba(239,68,68,0.15); color: #fca5a5; }
+        .badge-gray   { background: rgba(148,163,184,0.15); color: #94a3b8; }
+        .btn-sm { padding: 5px 12px; border-radius: 7px; font-size: 13px; text-decoration: none; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); background: transparent; }
+        .btn-sm:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .flash-ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; color: #86efac; font-size: 14px; }
+        .empty { text-align: center; padding: 48px; color: rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-brand">🐾 Zdravá Packa</div>
+    <div class="nav-links">
+        <a th:href="@{/zvirata}">Zvířata</a>
+        <a th:href="@{/adopce}" class="active">Adopce</a>
+        <a th:href="@{/zajemci}">Zájemci</a>
+        <a th:href="@{/uzivatele}" sec:authorize="hasAuthority('Administrátor')">Uživatelé</a>
+        <a th:href="@{/admin}" sec:authorize="hasAuthority('Administrátor')">Dashboard</a>
+    </div>
+    <div class="nav-right">
+        <span class="nav-user" sec:authentication="name">uživatel</span>
+        <a href="/logout" class="btn-logout">Odhlásit</a>
+    </div>
+</nav>
+<main>
+    <div class="page-header">
+        <h1>❤️ Adopční žádosti</h1>
+        <a th:href="@{/adopce/nova}" class="btn-primary">+ Nová žádost</a>
+    </div>
+    <div class="flash-ok" th:if="${zprava}" th:text="${zprava}"></div>
+
+    <div class="filters">
+        <a th:href="@{/adopce}" class="filter-btn" th:classappend="${filtrStav == null ? ' active' : ''}">Vše</a>
+        <a th:href="@{/adopce(stav='Probíhá')}" class="filter-btn" th:classappend="${filtrStav == 'Probíhá' ? ' active' : ''}">⏳ Probíhá</a>
+        <a th:href="@{/adopce(stav='Schválena')}" class="filter-btn" th:classappend="${filtrStav == 'Schválena' ? ' active' : ''}">✅ Schválena</a>
+        <a th:href="@{/adopce(stav='Zamítnuta')}" class="filter-btn" th:classappend="${filtrStav == 'Zamítnuta' ? ' active' : ''}">❌ Zamítnuta</a>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>ID</th><th>Zvíře</th><th>Zájemce</th><th>Datum žádosti</th><th>Datum schválení</th><th>Stav</th><th>Akce</th></tr></thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(adopce)}">
+                <td colspan="7" class="empty">Žádné žádosti nenalezeny</td>
+            </tr>
+            <tr th:each="a : ${adopce}">
+                <td th:text="${a.idAdopce}">-</td>
+                <td th:text="${a.zvire?.jmeno}">-</td>
+                <td th:text="${a.zajemce?.jmeno + ' ' + a.zajemce?.prijmeni}">-</td>
+                <td th:text="${a.datumZadosti}">-</td>
+                <td th:text="${a.datumSchvaleni ?: '–'}">-</td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${a.stav == 'Schválena' ? 'badge-green' : (a.stav == 'Zamítnuta' ? 'badge-red' : 'badge-yellow')}"
+                          th:text="${a.stav}">-</span>
+                </td>
+                <td><a th:href="@{/adopce/{id}(id=${a.idAdopce})}" class="btn-sm">Detail</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><title>Zájemce – Zdravá Packa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+        nav { background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .nav-brand { font-size: 20px; font-weight: 700; color: #f8fafc; }
+        .nav-links a { color: rgba(255,255,255,0.65); text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 14px; }
+        .nav-links a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-logout { padding: 7px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: rgba(255,255,255,0.7); font-size: 13px; text-decoration: none; }
+        main { padding: 40px 32px; max-width: 800px; margin: 0 auto; }
+        .back { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 14px; display: block; margin-bottom: 24px; }
+        h1 { font-size: 24px; font-weight: 700; margin-bottom: 28px; }
+        .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+        .card h2 { font-size: 15px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        .info-row:last-child { border-bottom: none; }
+        .key { color: rgba(255,255,255,0.5); }
+        .actions { display: flex; gap: 10px; margin-top: 4px; }
+        .btn-secondary { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; padding: 9px 18px; border-radius: 10px; font-size: 14px; text-decoration: none; }
+        .btn-danger { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; padding: 9px 18px; border-radius: 10px; font-size: 14px; cursor: pointer; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-brand">🐾 Zdravá Packa</div>
+    <div class="nav-links">
+        <a th:href="@{/zvirata}">Zvířata</a>
+        <a th:href="@{/zajemci}">Zájemci</a>
+    </div>
+    <a href="/logout" class="btn-logout">Odhlásit</a>
+</nav>
+<main>
+    <a th:href="@{/zajemci}" class="back">← Zpět</a>
+    <h1 th:text="${zajemce.jmeno + ' ' + zajemce.prijmeni}">Zájemce</h1>
+    <div class="card">
+        <h2>Osobní údaje</h2>
+        <div class="info-row"><span class="key">Email</span><span th:text="${zajemce.email}">-</span></div>
+        <div class="info-row"><span class="key">Telefon</span><span th:text="${zajemce.telefon}">-</span></div>
+        <div class="info-row"><span class="key">Adresa</span><span th:text="${zajemce.ulice + ' ' + zajemce.cisloPopisne + ', ' + zajemce.psc + ' ' + zajemce.mesto}">-</span></div>
+        <div class="info-row"><span class="key">Typ bydlení</span><span th:text="${zajemce.typBydleni}">-</span></div>
+        <div class="info-row"><span class="key">Má jiná zvířata</span><span th:text="${zajemce.maJinaZvirata ? 'Ano' : 'Ne'}">-</span></div>
+    </div>
+    <div class="actions">
+        <a th:href="@{/zajemci/{id}/upravit(id=${zajemce.idZajemce})}" class="btn-secondary">✏️ Upravit</a>
+        <form th:action="@{/zajemci/{id}/smazat(id=${zajemce.idZajemce})}" method="post">
+            <button type="submit" class="btn-danger" onclick="return confirm('Opravdu smazat?')">🗑️ Smazat</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

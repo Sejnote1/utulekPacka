@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/><title>Uživatelé – Zdravá Packa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+        nav { background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .nav-brand { font-size: 20px; font-weight: 700; color: #f8fafc; }
+        .nav-links { display: flex; gap: 4px; }
+        .nav-links a { color: rgba(255,255,255,0.65); text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 14px; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.1); color: #fff; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .nav-user { color: rgba(255,255,255,0.5); font-size: 13px; }
+        .btn-logout { padding: 7px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: rgba(255,255,255,0.7); font-size: 13px; text-decoration: none; }
+        main { padding: 40px 32px; max-width: 1000px; margin: 0 auto; }
+        .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+        h1 { font-size: 26px; font-weight: 700; }
+        .btn-primary { background: linear-gradient(135deg, #e94560, #c62a47); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .table-wrap { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: rgba(255,255,255,0.06); padding: 14px 16px; text-align: left; font-size: 12px; color: rgba(255,255,255,0.5); text-transform: uppercase; }
+        td { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 14px; }
+        tr:hover td { background: rgba(255,255,255,0.03); }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .badge-admin { background: rgba(168,85,247,0.15); color: #d8b4fe; }
+        .badge-vet   { background: rgba(59,130,246,0.15); color: #93c5fd; }
+        .badge-rec   { background: rgba(34,197,94,0.15); color: #86efac; }
+        .btn-sm { padding: 5px 12px; border-radius: 7px; font-size: 13px; text-decoration: none; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); background: transparent; cursor: pointer; }
+        .btn-sm:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-sm-danger { border-color: rgba(239,68,68,0.3); color: #fca5a5; background: transparent; }
+        .btn-sm-danger:hover { background: rgba(239,68,68,0.15); }
+        .flash-ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; color: #86efac; font-size: 14px; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-brand">🐾 Zdravá Packa</div>
+    <div class="nav-links">
+        <a th:href="@{/zvirata}">Zvířata</a>
+        <a th:href="@{/adopce}">Adopce</a>
+        <a th:href="@{/zajemci}">Zájemci</a>
+        <a th:href="@{/uzivatele}" class="active">Uživatelé</a>
+        <a th:href="@{/admin}">Dashboard</a>
+    </div>
+    <div class="nav-right">
+        <span class="nav-user" sec:authentication="name">uživatel</span>
+        <a href="/logout" class="btn-logout">Odhlásit</a>
+    </div>
+</nav>
+<main>
+    <div class="page-header">
+        <h1>⚙️ Správa uživatelů</h1>
+        <a th:href="@{/uzivatele/novy}" class="btn-primary">+ Přidat uživatele</a>
+    </div>
+    <div class="flash-ok" th:if="${zprava}" th:text="${zprava}"></div>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Jméno</th><th>Email</th><th>Role</th><th>Akce</th></tr></thead>
+            <tbody>
+            <tr th:each="u : ${uzivatele}">
+                <td th:text="${u.jmeno + ' ' + u.prijmeni}">-</td>
+                <td th:text="${u.email}">-</td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${u.role?.nazev == 'Administrátor' ? 'badge-admin' : (u.role?.nazev == 'Veterinář' ? 'badge-vet' : 'badge-rec')}"
+                          th:text="${u.role?.nazev}">-</span>
+                </td>
+                <td style="display:flex; gap:6px;">
+                    <a th:href="@{/uzivatele/{id}/upravit(id=${u.idUzivatel})}" class="btn-sm">Upravit</a>
+                    <form th:action="@{/uzivatele/{id}/smazat(id=${u.idUzivatel})}" method="post" style="display:inline">
+                        <button type="submit" class="btn-sm btn-sm-danger"
+                                onclick="return confirm('Smazat uživatele?')">Smazat</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><title>Nová žádost o adopci – Zdravá Packa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+        nav { background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .nav-brand { font-size: 20px; font-weight: 700; color: #f8fafc; }
+        .nav-links a { color: rgba(255,255,255,0.65); text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 14px; }
+        .nav-links a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-logout { padding: 7px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: rgba(255,255,255,0.7); font-size: 13px; text-decoration: none; }
+        main { padding: 40px 32px; max-width: 640px; margin: 0 auto; }
+        .back { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 14px; display: block; margin-bottom: 24px; }
+        h1 { font-size: 24px; font-weight: 700; margin-bottom: 28px; }
+        .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 32px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+        label { font-size: 13px; color: rgba(255,255,255,0.55); }
+        label .req { color: #e94560; }
+        select { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 9px; color: #e2e8f0; padding: 10px 14px; font-size: 14px; outline: none; }
+        select option { background: #1e293b; }
+        select:focus { border-color: #e94560; }
+        .form-actions { display: flex; gap: 12px; margin-top: 8px; }
+        .btn-primary { background: linear-gradient(135deg, #e94560, #c62a47); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .btn-secondary { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; padding: 11px 20px; border-radius: 10px; font-size: 15px; text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-brand">🐾 Zdravá Packa</div>
+    <div class="nav-links">
+        <a th:href="@{/zvirata}">Zvířata</a>
+        <a th:href="@{/adopce}">Adopce</a>
+    </div>
+    <a href="/logout" class="btn-logout">Odhlásit</a>
+</nav>
+<main>
+    <a th:href="@{/adopce}" class="back">← Zpět</a>
+    <h1>❤️ Nová žádost o adopci</h1>
+    <div class="card">
+        <form th:action="@{/adopce/ulozit}" method="post">
+            <div class="form-group">
+                <label>Zvíře <span class="req">*</span></label>
+                <!-- name="zvire" + konvertor String→Zvire v WebConfig -->
+                <select name="zvire" required>
+                    <option value="">– vyberte zvíře –</option>
+                    <option th:each="z : ${zvirata}"
+                            th:value="${z.idZvire}"
+                            th:text="${z.jmeno + ' (' + z.plemeno?.nazev + ') – ' + z.status?.stav}">
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Zájemce <span class="req">*</span></label>
+                <!-- name="zajemce" + konvertor String→Zajemce v WebConfig -->
+                <select name="zajemce" required>
+                    <option value="">– vyberte zájemce –</option>
+                    <option th:each="zaj : ${zajemci}"
+                            th:value="${zaj.idZajemce}"
+                            th:text="${zaj.jmeno + ' ' + zaj.prijmeni + ' (' + zaj.email + ')'}">
+                    </option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">💾 Zaregistrovat žádost</button>
+                <a th:href="@{/adopce}" class="btn-secondary">Zrušit</a>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

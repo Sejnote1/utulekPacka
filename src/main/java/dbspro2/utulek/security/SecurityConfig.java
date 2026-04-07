@@ -12,7 +12,6 @@ public class SecurityConfig {
 
     private final UzivatelDetailsService uzivatelDetailsService;
 
-    // Konstruktorová injekce
     public SecurityConfig(UzivatelDetailsService uzivatelDetailsService) {
         this.uzivatelDetailsService = uzivatelDetailsService;
     }
@@ -20,28 +19,31 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/h2-console/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .successHandler((request, response, authentication) -> {
-                            String role = authentication.getAuthorities().iterator().next().getAuthority();
-                            switch (role) {
-                                case "Recepční" -> response.sendRedirect("/recepce");
-                                case "Veterinář" -> response.sendRedirect("/veterinar");
-                                case "Administrátor" -> response.sendRedirect("/admin");
-                                default -> response.sendRedirect("/home");
-                            }
-                        })
-                        .permitAll()
-                )
-                .csrf(csrf -> csrf.disable())
-                .headers(headers -> headers
-                        .frameOptions(frameOptions -> frameOptions.disable())
-                )
-                .userDetailsService(uzivatelDetailsService);  // tady už je správně použito
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/admin/**", "/uzivatele/**").hasAuthority("Administrátor")
+                .requestMatchers("/zvirata/novy", "/zvirata/*/upravit", "/zaznamy/**").hasAnyAuthority("Veterinář", "Administrátor")
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .successHandler((request, response, authentication) -> {
+                    String role = authentication.getAuthorities().iterator().next().getAuthority();
+                    switch (role) {
+                        case "Recepční"     -> response.sendRedirect("/zvirata");
+                        case "Veterinář"    -> response.sendRedirect("/zvirata");
+                        case "Administrátor"-> response.sendRedirect("/admin");
+                        default             -> response.sendRedirect("/zvirata");
+                    }
+                })
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
+            )
+            .csrf(csrf -> csrf.disable())
+            .userDetailsService(uzivatelDetailsService);
 
         return http.build();
     }

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/><title>Detail adopce – Zdravá Packa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+        nav { background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .nav-brand { font-size: 20px; font-weight: 700; color: #f8fafc; }
+        .nav-links a { color: rgba(255,255,255,0.65); text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 14px; }
+        .nav-links a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-logout { padding: 7px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: rgba(255,255,255,0.7); font-size: 13px; text-decoration: none; }
+        main { padding: 40px 32px; max-width: 900px; margin: 0 auto; }
+        .back { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 14px; display: block; margin-bottom: 24px; }
+        .back:hover { color: #fff; }
+        .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+        h1 { font-size: 24px; font-weight: 700; }
+        .badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; }
+        .badge-yellow { background: rgba(234,179,8,0.15); color: #fde047; }
+        .badge-green  { background: rgba(34,197,94,0.15); color: #86efac; }
+        .badge-red    { background: rgba(239,68,68,0.15); color: #fca5a5; }
+        .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+        .card h2 { font-size: 15px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        .info-row:last-child { border-bottom: none; }
+        .key { color: rgba(255,255,255,0.5); }
+        .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+        .btn-approve { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-reject-section { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 24px; }
+        .btn-reject-section h2 { font-size: 15px; color: rgba(255,255,255,0.5); text-transform: uppercase; margin-bottom: 16px; }
+        .checkboxes { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+        .checkbox-row { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        .checkbox-row input { width: 16px; height: 16px; accent-color: #e94560; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .flash-ok  { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; color: #86efac; font-size: 14px; }
+        .flash-err { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; color: #fca5a5; font-size: 14px; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-brand">🐾 Zdravá Packa</div>
+    <div class="nav-links">
+        <a th:href="@{/zvirata}">Zvířata</a>
+        <a th:href="@{/adopce}">Adopce</a>
+        <a th:href="@{/zajemci}">Zájemci</a>
+    </div>
+    <a href="/logout" class="btn-logout">Odhlásit</a>
+</nav>
+<main>
+    <a th:href="@{/adopce}" class="back">← Zpět na seznam</a>
+    <div class="flash-ok" th:if="${zprava}" th:text="${zprava}"></div>
+    <div class="flash-err" th:if="${chyba}" th:text="${chyba}"></div>
+
+    <div class="page-header">
+        <h1>Adopce #<span th:text="${adopce.idAdopce}">?</span></h1>
+        <span class="badge"
+              th:classappend="${adopce.stav == 'Schválena' ? 'badge-green' : (adopce.stav == 'Zamítnuta' ? 'badge-red' : 'badge-yellow')}"
+              th:text="${adopce.stav}">-</span>
+    </div>
+
+    <div class="card">
+        <h2>Zvíře</h2>
+        <div class="info-row"><span class="key">Jméno</span><span th:text="${adopce.zvire?.jmeno}">-</span></div>
+        <div class="info-row"><span class="key">Druh / Plemeno</span><span th:text="${adopce.zvire?.plemeno?.druh?.nazev + ' – ' + adopce.zvire?.plemeno?.nazev}">-</span></div>
+        <div class="info-row"><span class="key">Aktuální status</span><span th:text="${adopce.zvire?.status?.stav}">-</span></div>
+    </div>
+
+    <div class="card">
+        <h2>Zájemce</h2>
+        <div class="info-row"><span class="key">Jméno</span><span th:text="${adopce.zajemce?.jmeno + ' ' + adopce.zajemce?.prijmeni}">-</span></div>
+        <div class="info-row"><span class="key">Email</span><span th:text="${adopce.zajemce?.email}">-</span></div>
+        <div class="info-row"><span class="key">Telefon</span><span th:text="${adopce.zajemce?.telefon}">-</span></div>
+        <div class="info-row"><span class="key">Adresa</span><span th:text="${adopce.zajemce?.ulice + ' ' + adopce.zajemce?.cisloPopisne + ', ' + adopce.zajemce?.mesto}">-</span></div>
+        <div class="info-row"><span class="key">Typ bydlení</span><span th:text="${adopce.zajemce?.typBydleni}">-</span></div>
+        <div class="info-row"><span class="key">Má jiná zvířata</span><span th:text="${adopce.zajemce?.maJinaZvirata ? 'Ano' : 'Ne'}">-</span></div>
+    </div>
+
+    <div class="card">
+        <h2>Žádost</h2>
+        <div class="info-row"><span class="key">Datum žádosti</span><span th:text="${adopce.datumZadosti}">-</span></div>
+        <div class="info-row"><span class="key">Datum schválení</span><span th:text="${adopce.datumSchvaleni ?: '–'}">-</span></div>
+    </div>
+
+    <!-- Akce – jen když probíhá -->
+    <div th:if="${adopce.stav == 'Probíhá'}">
+        <div class="card" style="margin-bottom: 16px;">
+            <h2>✅ Schválit adopci</h2>
+            <p style="color: rgba(255,255,255,0.5); font-size: 14px; margin-bottom: 16px;">
+                Po schválení se automaticky změní status zvířete na "Adoptováno".
+            </p>
+            <form th:action="@{/adopce/{id}/schvalit(id=${adopce.idAdopce})}" method="post">
+                <button type="submit" class="btn-approve"
+                        onclick="return confirm('Opravdu schválit tuto adopci?')">✅ Schválit adopci</button>
+            </form>
+        </div>
+
+        <div class="btn-reject-section">
+            <h2>❌ Zamítnout adopci</h2>
+            <form th:action="@{/adopce/{id}/zamitnout(id=${adopce.idAdopce})}" method="post">
+                <div class="checkboxes">
+                    <div class="checkbox-row" th:each="d : ${duvody}">
+                        <input type="checkbox" name="duvodIds" th:value="${d.idDuvod}"/>
+                        <span th:text="${d.popis}">-</span>
+                    </div>
+                </div>
+                <button type="submit" class="btn-danger">❌ Zamítnout</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

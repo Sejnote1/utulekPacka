@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL databáze
+  db:
+    image: postgres:15-alpine
+    container_name: utulek_postgres
+    environment:
+      POSTGRES_USER: utulek
+      POSTGRES_PASSWORD: utulek_pass
+      POSTGRES_DB: utulek_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U utulek -d utulek_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Spring Boot aplikace
+  app:
+    build: .
+    container_name: utulek_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/utulek_db
+      SPRING_DATASOURCE_USERNAME: utulek
+      SPRING_DATASOURCE_PASSWORD: utulek_pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+
+volumes:
+  postgres_data:

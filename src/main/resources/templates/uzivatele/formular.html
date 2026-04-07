@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><title>Uživatel – formulář – Zdravá Packa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+        nav { background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .nav-brand { font-size: 20px; font-weight: 700; color: #f8fafc; }
+        .nav-links a { color: rgba(255,255,255,0.65); text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 14px; }
+        .nav-links a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-logout { padding: 7px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: rgba(255,255,255,0.7); font-size: 13px; text-decoration: none; }
+        main { padding: 40px 32px; max-width: 640px; margin: 0 auto; }
+        .back { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 14px; display: block; margin-bottom: 24px; }
+        h1 { font-size: 24px; font-weight: 700; margin-bottom: 28px; }
+        .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 32px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full { grid-column: 1 / -1; }
+        label { font-size: 13px; color: rgba(255,255,255,0.55); }
+        label .req { color: #e94560; }
+        input, select { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 9px; color: #e2e8f0; padding: 10px 14px; font-size: 14px; outline: none; }
+        input:focus, select:focus { border-color: #e94560; }
+        select option { background: #1e293b; }
+        .note { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+        .form-actions { display: flex; gap: 12px; margin-top: 24px; }
+        .btn-primary { background: linear-gradient(135deg, #e94560, #c62a47); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .btn-secondary { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; padding: 11px 20px; border-radius: 10px; font-size: 15px; text-decoration: none; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-brand">🐾 Zdravá Packa</div>
+    <div class="nav-links">
+        <a th:href="@{/uzivatele}">Uživatelé</a>
+        <a th:href="@{/admin}">Dashboard</a>
+    </div>
+    <a href="/logout" class="btn-logout">Odhlásit</a>
+</nav>
+<main>
+    <a th:href="@{/uzivatele}" class="back">← Zpět</a>
+    <h1 th:text="${uzivatel.idUzivatel == null ? '👤 Nový uživatel' : '✏️ Upravit uživatele'}">Formulář</h1>
+    <div class="card">
+        <form th:action="@{/uzivatele/ulozit}" method="post">
+            <input type="hidden" name="idUzivatel" th:value="${uzivatel.idUzivatel}"/>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Jméno <span class="req">*</span></label>
+                    <input type="text" name="jmeno" th:value="${uzivatel.jmeno}" required/>
+                </div>
+                <div class="form-group">
+                    <label>Příjmení <span class="req">*</span></label>
+                    <input type="text" name="prijmeni" th:value="${uzivatel.prijmeni}" required/>
+                </div>
+                <div class="form-group full">
+                    <label>Email <span class="req">*</span></label>
+                    <input type="email" name="email" th:value="${uzivatel.email}" required/>
+                </div>
+                <div class="form-group full">
+                    <label>Heslo <span th:if="${uzivatel.idUzivatel == null}" class="req">*</span>
+                        <span th:unless="${uzivatel.idUzivatel == null}">(ponechte prázdné = beze změny)</span></label>
+                    <input type="password" name="hesloHash" placeholder="••••••••"
+                           th:required="${uzivatel.idUzivatel == null}"/>
+                    <span class="note">Heslo bude automaticky zahashováno.</span>
+                </div>
+                <div class="form-group full">
+                    <label>Role <span class="req">*</span></label>
+                    <!-- name="role" + konvertor String→Role v WebConfig -->
+                    <select name="role" required>
+                        <option value="">– vyberte roli –</option>
+                        <option th:each="r : ${role}"
+                                th:value="${r.idRole}"
+                                th:text="${r.nazev}"
+                                th:selected="${uzivatel.role != null and uzivatel.role.idRole == r.idRole}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">💾 Uložit</button>
+                <a th:href="@{/uzivatele}" class="btn-secondary">Zrušit</a>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

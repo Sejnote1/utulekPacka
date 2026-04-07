@@ -5,13 +5,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class LoginController {
+
     @GetMapping("/login")
     public String login() {
-        return "login"; // vrátí Thymeleaf šablonu login.html
+        return "login";
     }
 
+    // Fallback – přesměruje na seznam zvířat
     @GetMapping("/home")
     public String home() {
-        return "home"; // stránka po přihlášení
+        return "redirect:/zvirata";
     }
 }

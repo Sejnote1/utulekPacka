@@ -2,22 +2,32 @@ package dbspro2.utulek.service;
 
 import dbspro2.utulek.model.VeterinarniZaznam;
 import dbspro2.utulek.repository.VeterinarniZaznamRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class VeterinarniZaznamService {
 
-    @Autowired
-    private VeterinarniZaznamRepository repo;
+    private final VeterinarniZaznamRepository zaznamRepository;
+
+    public VeterinarniZaznamService(VeterinarniZaznamRepository zaznamRepository) {
+        this.zaznamRepository = zaznamRepository;
+    }
+
+    public List<VeterinarniZaznam> getByZvire(Integer idZvire) {
+        return zaznamRepository.findByZvire_IdZvire(idZvire);
+    }
 
     public VeterinarniZaznam create(VeterinarniZaznam zaznam) {
-
-        // ❗ kontrola role
-        if (!zaznam.getUzivatel().getRole().getNazev().equals("Veterinář")) {
-            throw new RuntimeException("Záznam může vytvořit jen veterinář");
+        if (zaznam.getDatum() == null) {
+            zaznam.setDatum(LocalDate.now());
         }
+        return zaznamRepository.save(zaznam);
+    }
 
-        return repo.save(zaznam);
+    public void delete(Integer id) {
+        zaznamRepository.deleteById(id);
     }
 }

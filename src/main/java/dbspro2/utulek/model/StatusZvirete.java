@@ -19,6 +19,12 @@ public class StatusZvirete {
     @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
     private List<Zvire> zvirata;
 
+    public StatusZvirete() {}
+
+    public StatusZvirete(String stav) {
+        this.stav = stav;
+    }
+
     public Integer getIdStatus() {
         return idStatus;
     }

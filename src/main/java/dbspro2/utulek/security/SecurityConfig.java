@@ -22,8 +22,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/admin/**", "/uzivatele/**").hasAuthority("Administrátor")
-                .requestMatchers("/zvirata/novy", "/zvirata/*/upravit", "/zaznamy/**").hasAnyAuthority("Veterinář", "Administrátor")
+                .requestMatchers("/zvirata/novy", "/zvirata/ulozit", "/zvirata/*/upravit").hasAnyAuthority("Recepční", "Administrátor")
+                .requestMatchers("/zaznamy/**").hasAnyAuthority("Veterinář", "Administrátor")
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                .accessDeniedPage("/chyba/pristup")
             )
             .formLogin(form -> form
                 .loginPage("/login")

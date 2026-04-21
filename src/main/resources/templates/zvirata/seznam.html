@@ -68,6 +68,7 @@
         <h1>🐾 Evidence zvířat</h1>
         <a th:href="@{/zvirata/novy}" class="btn-primary"
            sec:authorize="hasAnyAuthority('Recepční','Administrátor')">+ Přidat zvíře</a>
+
     </div>
     <div class="flash-ok" th:if="${zprava}" th:text="${zprava}"></div>
 

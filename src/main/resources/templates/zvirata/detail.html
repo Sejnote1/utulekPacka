@@ -77,9 +77,11 @@
                                    (zvire.status?.stav == 'V léčení' ? 'badge-orange' : 'badge-gray'))}"
                   th:text="${zvire.status?.stav}">-</span>
         </div>
-        <div class="header-actions" sec:authorize="hasAnyAuthority('Veterinář','Administrátor')">
-            <a th:href="@{/zvirata/{id}/upravit(id=${zvire.idZvire})}" class="btn-secondary">✏️ Upravit</a>
-            <a th:href="@{/zaznamy/novy(idZvire=${zvire.idZvire})}" class="btn-primary">+ Vet. záznam</a>
+        <div class="header-actions">
+            <a th:href="@{/zvirata/{id}/upravit(id=${zvire.idZvire})}" class="btn-secondary"
+               sec:authorize="hasAnyAuthority('Recepční','Administrátor')">✏️ Upravit</a>
+            <a th:href="@{/zaznamy/novy(idZvire=${zvire.idZvire})}" class="btn-primary"
+               sec:authorize="hasAnyAuthority('Veterinář','Administrátor')">+ Vet. záznam</a>
         </div>
     </div>
 

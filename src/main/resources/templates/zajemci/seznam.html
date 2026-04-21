@@ -51,7 +51,8 @@
 <main>
     <div class="page-header">
         <h1>🏠 Zájemci o adopci</h1>
-        <a th:href="@{/zajemci/novy}" class="btn-primary">+ Přidat zájemce</a>
+        <a th:href="@{/zajemci/novy}" class="btn-primary"
+           sec:authorize="hasAnyAuthority('Recepční','Administrátor')">+ Přidat zájemce</a>
     </div>
     <div class="flash-ok" th:if="${zprava}" th:text="${zprava}"></div>
     <form th:action="@{/zajemci}" method="get" class="search-bar">

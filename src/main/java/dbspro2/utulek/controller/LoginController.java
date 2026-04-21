@@ -11,6 +11,12 @@ public class LoginController {
         return "login";
     }
 
+    // Kořenová stránka → přesměruj na login
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/login";
+    }
+
     // Fallback – přesměruje na seznam zvířat
     @GetMapping("/home")
     public String home() {

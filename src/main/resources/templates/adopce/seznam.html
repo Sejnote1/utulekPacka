@@ -55,7 +55,9 @@
 <main>
     <div class="page-header">
         <h1>❤️ Adopční žádosti</h1>
-        <a th:href="@{/adopce/nova}" class="btn-primary">+ Nová žádost</a>
+        <a th:href="@{/adopce/nova}" class="btn-primary"
+           sec:authorize="hasAnyAuthority('Recepční','Administrátor')">+ Nová žádost</a>
+
     </div>
     <div class="flash-ok" th:if="${zprava}" th:text="${zprava}"></div>
 

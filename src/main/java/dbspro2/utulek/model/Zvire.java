@@ -1,6 +1,7 @@
 package dbspro2.utulek.model;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,15 +18,17 @@ public class Zvire {
     @Column(name = "jmeno", length = 50)
     private String jmeno;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "datum_narozeni")
     private LocalDate datumNarozeni;
 
     @Column(name = "pohlavi", length = 1)
     private String pohlavi;
 
-    @Column(name = "povaha", length = 50)
+    @Column(name = "povaha", length = 255)
     private String povaha;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "datum_prijeti", nullable = false)
     private LocalDate datumPrijeti;
 

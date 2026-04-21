@@ -1,6 +1,7 @@
 package dbspro2.utulek.model;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -13,6 +14,7 @@ public class VeterinarniZaznam {
     @Column(name = "id_zaznam")
     private Integer idZaznam;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "datum", nullable = false)
     private LocalDate datum;
 

@@ -61,4 +61,11 @@ public class ZajemceController {
         ra.addFlashAttribute("zprava", "Zájemce byl odstraněn.");
         return "redirect:/zajemci";
     }
+
+    @PostMapping("/{id}/anonymizovat")
+    public String anonymizovat(@PathVariable Integer id, RedirectAttributes ra) {
+        zajemceService.anonymizuj(id);
+        ra.addFlashAttribute("zprava", "Osobní údaje zájemce byly v databázi anonymizovány přes nativní Stored Procedure.");
+        return "redirect:/zajemci";
+    }
 }

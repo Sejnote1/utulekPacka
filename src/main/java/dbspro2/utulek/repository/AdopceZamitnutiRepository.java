@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface AdopceZamitnutiRepository extends JpaRepository<AdopceZamitnuti, Integer> {
+import dbspro2.utulek.model.AdopceZamitnutiId;
+
+public interface AdopceZamitnutiRepository extends JpaRepository<AdopceZamitnuti, AdopceZamitnutiId> {
     List<AdopceZamitnuti> findByAdopce_IdAdopce(Integer idAdopce);
 }

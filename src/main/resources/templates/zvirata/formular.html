@@ -46,7 +46,7 @@
     <h1 th:text="${zvire.idZvire == null ? '🐾 Přidat nové zvíře' : '✏️ Upravit zvíře'}">Formulář</h1>
 
     <div class="card">
-        <form th:action="@{/zvirata/ulozit}" method="post">
+        <form th:action="@{/zvirata/ulozit}" method="post" enctype="multipart/form-data">
             <!-- Hidden ID pro editaci -->
             <input type="hidden" name="idZvire" th:value="${zvire.idZvire}"/>
 
@@ -99,6 +99,31 @@
                     <label>Povaha</label>
                     <input type="text" name="povaha" th:value="${zvire.povaha}" maxlength="255" placeholder="Např. přátelský, hravý, klidný..."/>
                 </div>
+                <div class="form-group full" style="background: rgba(255,255,255,0.02); padding: 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+                    <label style="font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 12px; display: block;">🏥 Zdravotní a chovatelská specifika</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label>Oblíbené krmivo</label>
+                            <input type="text" id="ui_krmivo" placeholder="Např. Granule, maso..."/>
+                        </div>
+                        <div class="form-group" style="justify-content: flex-end; padding-bottom: 10px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: #e2e8f0; font-size: 14px;">
+                                <input type="checkbox" id="ui_alergie" style="width: auto; margin: 0; transform: scale(1.2); accent-color: #e94560;"/>
+                                Zvíře má prokazatelné alergie
+                            </label>
+                        </div>
+                        <div class="form-group full">
+                            <label>Zdravotní poznámka</label>
+                            <input type="text" id="ui_zdravi" placeholder="Např. Kulhá na pravou nohu..."/>
+                        </div>
+                    </div>
+                    <!-- Skryté pole na prolnutí požadavků do JSON pro Databázi -->
+                    <input type="hidden" name="specifika" id="specifika_json" th:value="${zvire.specifika}"/>
+                </div>
+                <div class="form-group full">
+                    <label>Fotografie zvířete</label>
+                    <input type="file" name="obrazek_file" accept="image/*"/>
+                </div>
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn-primary">💾 Uložit</button>
@@ -107,5 +132,37 @@
         </form>
     </div>
 </main>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const jsonField = document.getElementById('specifika_json');
+        const uiKrmivo = document.getElementById('ui_krmivo');
+        const uiAlergie = document.getElementById('ui_alergie');
+        const uiZdravi = document.getElementById('ui_zdravi');
+        
+        // Načtení dat z databázového JSONu do moderních UI prvků při editaci zvířete
+        if (jsonField.value) {
+            try {
+                const data = JSON.parse(jsonField.value);
+                if (data.krmivo) uiKrmivo.value = data.krmivo;
+                if (data.alergie === true) uiAlergie.checked = true;
+                if (data.zdravi) uiZdravi.value = data.zdravi;
+            } catch(e) { }
+        }
+        
+        // Transformace UI prvků zpět do tvrdého JSON stringu při zmáčknutí 'Uložit'
+        document.querySelector('form').addEventListener('submit', function() {
+            const data = {};
+            if (uiKrmivo.value.trim() !== '') data.krmivo = uiKrmivo.value.trim();
+            if (uiAlergie.checked) data.alergie = true;
+            if (uiZdravi.value.trim() !== '') data.zdravi = uiZdravi.value.trim();
+            
+            if(Object.keys(data).length > 0) {
+                jsonField.value = JSON.stringify(data);
+            } else {
+                jsonField.value = "";
+            }
+        });
+    });
+</script>
 </body>
 </html>

@@ -3,33 +3,36 @@ package dbspro2.utulek.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(
-        name = "adopce_zamitnuti",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"id_adopce", "id_duvod"})
-        }
-)
+@Table(name = "adopce_zamitnuti")
 public class AdopceZamitnuti {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_zamitnuti")
-    private Integer idZamitnuti;
+    @EmbeddedId
+    private AdopceZamitnutiId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("idAdopce")
     @JoinColumn(name = "id_adopce", nullable = false)
     private Adopce adopce;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("idDuvod")
     @JoinColumn(name = "id_duvod", nullable = false)
     private DuvodZamitnuti duvod;
 
-    public Integer getIdZamitnuti() {
-        return idZamitnuti;
+    public AdopceZamitnuti() {}
+
+    public AdopceZamitnuti(Adopce adopce, DuvodZamitnuti duvod) {
+        this.adopce = adopce;
+        this.duvod = duvod;
+        this.id = new AdopceZamitnutiId(adopce.getIdAdopce(), duvod.getIdDuvod());
     }
 
-    public void setIdZamitnuti(Integer idZamitnuti) {
-        this.idZamitnuti = idZamitnuti;
+    public AdopceZamitnutiId getId() {
+        return id;
+    }
+
+    public void setId(AdopceZamitnutiId id) {
+        this.id = id;
     }
 
     public Adopce getAdopce() {

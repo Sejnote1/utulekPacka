@@ -89,9 +89,23 @@ public class ZvireController {
 
     // ===== ULOŽENÍ (nové i úprava) =====
     @PostMapping("/ulozit")
-    public String ulozit(@ModelAttribute Zvire zvire, RedirectAttributes ra) {
-        zvireService.save(zvire);
-        ra.addFlashAttribute("zprava", "Zvíře bylo úspěšně uloženo.");
+    public String ulozit(@ModelAttribute Zvire zvire, 
+                         @RequestParam(value = "obrazek_file", required = false) org.springframework.web.multipart.MultipartFile obrazekFile,
+                         RedirectAttributes ra) {
+        try {
+            if (obrazekFile != null && !obrazekFile.isEmpty()) {
+                zvire.setObrazek(obrazekFile.getBytes());
+            } else if (zvire.getIdZvire() != null) {
+                Zvire old = zvireService.getById(zvire.getIdZvire()).orElse(null);
+                if (old != null) {
+                    zvire.setObrazek(old.getObrazek());
+                }
+            }
+            zvireService.save(zvire);
+            ra.addFlashAttribute("zprava", "Zvíře bylo úspěšně uloženo.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("chyba", "Chyba při zpracování: " + e.getMessage());
+        }
         return "redirect:/zvirata";
     }
 
@@ -111,5 +125,18 @@ public class ZvireController {
         zvireService.delete(id);
         ra.addFlashAttribute("zprava", "Zvíře bylo odstraněno.");
         return "redirect:/zvirata";
+    }
+
+    // ===== ZOBRAZENÍ FOTOGRAFIE =====
+    @GetMapping("/{id}/obrazek")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<byte[]> getObrazek(@PathVariable Integer id) {
+        Zvire zvire = zvireService.getById(id).orElse(null);
+        if (zvire != null && zvire.getObrazek() != null && zvire.getObrazek().length > 0) {
+            return org.springframework.http.ResponseEntity.ok()
+                    .header(org.springframework.http.HttpHeaders.CONTENT_TYPE, "image/jpeg")
+                    .body(zvire.getObrazek());
+        }
+        return org.springframework.http.ResponseEntity.notFound().build();
     }
 }

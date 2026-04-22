@@ -6,8 +6,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 @Entity
-@Table(name = "zvire")
+@Table(name = "zvire", indexes = {
+        @Index(name = "idx_zvire_jmeno", columnList = "jmeno")
+})
 public class Zvire {
 
     @Id
@@ -45,6 +50,14 @@ public class Zvire {
 
     @OneToMany(mappedBy = "zvire", fetch = FetchType.LAZY)
     private List<VeterinarniZaznam> zaznamy;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "specifika", columnDefinition = "jsonb")
+    private String specifika;
+
+    @Lob
+    @Column(name = "obrazek")
+    private byte[] obrazek;
 
     public Integer getIdZvire() {
         return idZvire;
@@ -124,5 +137,21 @@ public class Zvire {
 
     public void setZaznamy(List<VeterinarniZaznam> zaznamy) {
         this.zaznamy = zaznamy;
+    }
+
+    public String getSpecifika() {
+        return specifika;
+    }
+
+    public void setSpecifika(String specifika) {
+        this.specifika = specifika;
+    }
+
+    public byte[] getObrazek() {
+        return obrazek;
+    }
+
+    public void setObrazek(byte[] obrazek) {
+        this.obrazek = obrazek;
     }
 }

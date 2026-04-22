@@ -76,6 +76,9 @@
                     <a th:href="@{/zajemci/{id}(id=${z.idZajemce})}" class="btn-sm">Detail</a>
                     <a th:href="@{/zajemci/{id}/upravit(id=${z.idZajemce})}" class="btn-sm"
                        sec:authorize="hasAnyAuthority('Administrátor','Recepční')">Upravit</a>
+                    <form th:action="@{/zajemci/{id}/anonymizovat(id=${z.idZajemce})}" method="post" sec:authorize="hasAuthority('Administrátor')">
+                        <button type="submit" class="btn-sm" style="color:#fca5a5;border-color:rgba(239,68,68,0.3)" onclick="return confirm('Opravdu anonymizovat osobní data? Akce napojena na nativní uloženou proceduru!');">Anonymizovat (GDPR)</button>
+                    </form>
                 </td>
             </tr>
             </tbody>

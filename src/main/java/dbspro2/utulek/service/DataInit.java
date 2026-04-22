@@ -5,6 +5,7 @@ import dbspro2.utulek.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
@@ -18,7 +19,8 @@ public class DataInit {
             PlemenoRepository plemenoRepo,
             StatusZvireteRepository statusRepo,
             DuvodZamitnutiRepository duvodRepo,
-            PasswordEncoder encoder
+            PasswordEncoder encoder,
+            JdbcTemplate jdbcTemplate
     ) {
         return args -> {
 
@@ -82,6 +84,17 @@ public class DataInit {
                 duvodRepo.save(new DuvodZamitnuti("Nedostatečné zkušenosti s daným druhem"));
                 duvodRepo.save(new DuvodZamitnuti("Nezájem zájemce po bližším seznámení"));
                 duvodRepo.save(new DuvodZamitnuti("Jiný důvod"));
+            }
+
+            // ===== NAČTENÍ A SPUŠTĚNÍ NATIVNÍCH SQL OBJEKTŮ (Triggery, Views) =====
+            try {
+                org.springframework.core.io.Resource resource = new org.springframework.core.io.ClassPathResource("custom_db_objects.sql");
+                String sql = new String(resource.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                // Rozdělíme ručně přes speciální oddělovač pokud jdbc neumí bloky vcelku, ale Postgres driver obvykle umí spustit celý skript.
+                jdbcTemplate.execute(sql);
+                System.out.println("Všechny SQL Views, Functions, Procedures a Triggers byly nahrány.");
+            } catch (Exception e) {
+                System.err.println("Chyba při nahrávání SQL datových objektů: " + e.getMessage());
             }
         };
     }

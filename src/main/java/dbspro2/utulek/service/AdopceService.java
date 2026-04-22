@@ -8,6 +8,7 @@ import dbspro2.utulek.model.Zvire;
 import dbspro2.utulek.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -63,7 +64,9 @@ public class AdopceService {
                 .orElseThrow(() -> new RuntimeException("Adopce nenalezena: " + id));
 
         if (adopceRepository.existsByZvire_IdZvireAndStav(adopce.getZvire().getIdZvire(), "Schválena")) {
-            throw new RuntimeException("Zvíře již má schválenou adopci.");
+            // DEMONSTRACE: Explicitní rollback transakce pomocí Springu a zamezení uložení do DB
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            throw new RuntimeException("Transakce zrušena (Rollback): Zvíře již má schválenou adopci.");
         }
 
         adopce.setStav("Schválena");
@@ -91,9 +94,7 @@ public class AdopceService {
             for (Integer idDuvod : duvodIds) {
                 DuvodZamitnuti duvod = duvodRepository.findById(idDuvod).orElse(null);
                 if (duvod != null) {
-                    AdopceZamitnuti az = new AdopceZamitnuti();
-                    az.setAdopce(adopce);
-                    az.setDuvod(duvod);
+                    AdopceZamitnuti az = new AdopceZamitnuti(adopce, duvod);
                     zamitnutiRepository.save(az);
                 }
             }

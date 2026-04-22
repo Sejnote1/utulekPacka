@@ -89,12 +89,16 @@
         <!-- Základní informace -->
         <div class="card">
             <h2>Základní informace</h2>
+            <div th:if="${zvire.obrazek != null}" style="margin-bottom: 16px; text-align: center;">
+                <img th:src="@{/zvirata/{id}/obrazek(id=${zvire.idZvire})}" alt="Fotografie zvířete" style="max-width: 100%; max-height: 250px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); object-fit: cover;"/>
+            </div>
             <div class="info-row"><span class="key">Druh</span><span class="val" th:text="${zvire.plemeno?.druh?.nazev}">-</span></div>
             <div class="info-row"><span class="key">Plemeno</span><span class="val" th:text="${zvire.plemeno?.nazev}">-</span></div>
             <div class="info-row"><span class="key">Pohlaví</span><span class="val" th:text="${zvire.pohlavi == 'M' ? 'Samec' : (zvire.pohlavi == 'F' ? 'Samice' : '-')}">-</span></div>
             <div class="info-row"><span class="key">Datum narození</span><span class="val" th:text="${zvire.datumNarozeni}">-</span></div>
             <div class="info-row"><span class="key">Datum přijetí</span><span class="val" th:text="${zvire.datumPrijeti}">-</span></div>
             <div class="info-row"><span class="key">Povaha</span><span class="val" th:text="${zvire.povaha}">-</span></div>
+            <div class="info-row" th:if="${zvire.specifika != null and !zvire.specifika.isBlank()}"><span class="key">Specifika (JSON)</span><span class="val" th:text="${zvire.specifika}">-</span></div>
         </div>
 
         <!-- Změna statusu -->

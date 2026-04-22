@@ -35,4 +35,9 @@ public class ZajemceService {
     public void delete(Integer id) {
         zajemceRepository.deleteById(id);
     }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void anonymizuj(Integer id) {
+        zajemceRepository.anonymizujZajemceNativne(id);
+    }
 }

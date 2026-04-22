@@ -57,9 +57,13 @@
     <div class="flash-ok" th:if="${zprava}" th:text="${zprava}"></div>
     <div class="table-wrap">
         <table>
-            <thead><tr><th>Jméno</th><th>Email</th><th>Role</th><th>Akce</th></tr></thead>
+            <thead><tr><th>Avatar</th><th>Jméno</th><th>Email</th><th>Role</th><th>Akce</th></tr></thead>
             <tbody>
             <tr th:each="u : ${uzivatele}">
+                <td>
+                    <img th:if="${u.avatar != null}" th:src="@{/uzivatele/{id}/avatar(id=${u.idUzivatel})}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" />
+                    <div th:unless="${u.avatar != null}" style="width: 40px; height: 40px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold;" th:text="${#strings.substring(u.jmeno,0,1) + #strings.substring(u.prijmeni,0,1)}"></div>
+                </td>
                 <td th:text="${u.jmeno + ' ' + u.prijmeni}">-</td>
                 <td th:text="${u.email}">-</td>
                 <td>

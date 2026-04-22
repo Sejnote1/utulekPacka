@@ -31,6 +31,10 @@ public class Uzivatel {
     @OneToMany(mappedBy = "uzivatel", fetch = FetchType.LAZY)
     private List<VeterinarniZaznam> zaznamy;
 
+    @Lob
+    @Column(name = "avatar")
+    private byte[] avatar;
+
     // ===== Výchozí konstruktor =====
     public Uzivatel() {
     }
@@ -99,5 +103,13 @@ public class Uzivatel {
 
     public void setZaznamy(List<VeterinarniZaznam> zaznamy) {
         this.zaznamy = zaznamy;
+    }
+
+    public byte[] getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(byte[] avatar) {
+        this.avatar = avatar;
     }
 }

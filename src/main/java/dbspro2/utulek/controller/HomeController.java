@@ -67,21 +67,47 @@ public class HomeController {
 
     // ===== ULOŽENÍ UŽIVATELE =====
     @PostMapping("/uzivatele/ulozit")
-    public String uzivatelUlozit(@ModelAttribute Uzivatel uzivatel, RedirectAttributes ra) {
+    public String uzivatelUlozit(@ModelAttribute Uzivatel uzivatel,
+                                 @RequestParam(value = "avatar_file", required = false) org.springframework.web.multipart.MultipartFile avatarFile,
+                                 RedirectAttributes ra) {
         boolean novy = (uzivatel.getIdUzivatel() == null);
+        
+        try {
+            // Processing starého souboru pokud chybí
+            if (avatarFile != null && !avatarFile.isEmpty()) {
+                uzivatel.setAvatar(avatarFile.getBytes());
+            } else if (!novy) {
+                Uzivatel stary = uzivatelService.getById(uzivatel.getIdUzivatel()).orElse(null);
+                if (stary != null) {
+                    uzivatel.setAvatar(stary.getAvatar());
+                }
+            }
 
-        if (!novy && (uzivatel.getHesloHash() == null || uzivatel.getHesloHash().isBlank())) {
-            // Editace: prázdné heslo → zachovat původní hash
-            uzivatelService.getById(uzivatel.getIdUzivatel())
-                    .ifPresent(stary -> uzivatel.setHesloHash(stary.getHesloHash()));
-            uzivatelService.save(uzivatel, false); // nehashuji znovu
-        } else {
-            // Nový uživatel nebo změna hesla
-            uzivatelService.save(uzivatel, true);
+            if (!novy && (uzivatel.getHesloHash() == null || uzivatel.getHesloHash().isBlank())) {
+                uzivatelService.getById(uzivatel.getIdUzivatel())
+                        .ifPresent(stary -> uzivatel.setHesloHash(stary.getHesloHash()));
+                uzivatelService.save(uzivatel, false);
+            } else {
+                uzivatelService.save(uzivatel, true);
+            }
+
+            ra.addFlashAttribute("zprava", "Uživatel byl úspěšně uložen.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("chyba", "Chyba při zpracování: " + e.getMessage());
         }
-
-        ra.addFlashAttribute("zprava", "Uživatel byl úspěšně uložen.");
         return "redirect:/uzivatele";
+    }
+
+    @GetMapping("/uzivatele/{id}/avatar")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<byte[]> getAvatar(@PathVariable Integer id) {
+        Uzivatel u = uzivatelService.getById(id).orElse(null);
+        if (u != null && u.getAvatar() != null && u.getAvatar().length > 0) {
+            return org.springframework.http.ResponseEntity.ok()
+                    .header(org.springframework.http.HttpHeaders.CONTENT_TYPE, "image/jpeg")
+                    .body(u.getAvatar());
+        }
+        return org.springframework.http.ResponseEntity.notFound().build();
     }
 
     // ===== SMAZÁNÍ UŽIVATELE =====

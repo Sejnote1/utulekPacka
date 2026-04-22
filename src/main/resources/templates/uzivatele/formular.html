@@ -41,7 +41,7 @@
     <a th:href="@{/uzivatele}" class="back">← Zpět</a>
     <h1 th:text="${uzivatel.idUzivatel == null ? '👤 Nový uživatel' : '✏️ Upravit uživatele'}">Formulář</h1>
     <div class="card">
-        <form th:action="@{/uzivatele/ulozit}" method="post">
+        <form th:action="@{/uzivatele/ulozit}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="idUzivatel" th:value="${uzivatel.idUzivatel}"/>
             <div class="form-grid">
                 <div class="form-group">
@@ -65,7 +65,6 @@
                 </div>
                 <div class="form-group full">
                     <label>Role <span class="req">*</span></label>
-                    <!-- name="role" + konvertor String→Role v WebConfig -->
                     <select name="role" required>
                         <option value="">– vyberte roli –</option>
                         <option th:each="r : ${role}"
@@ -74,6 +73,10 @@
                                 th:selected="${uzivatel.role != null and uzivatel.role.idRole == r.idRole}">
                         </option>
                     </select>
+                </div>
+                <div class="form-group full">
+                    <label>Profilový obrázek (Avatar)</label>
+                    <input type="file" name="avatar_file" accept="image/*"/>
                 </div>
             </div>
             <div class="form-actions">

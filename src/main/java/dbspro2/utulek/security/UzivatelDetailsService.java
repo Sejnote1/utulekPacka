@@ -17,6 +17,7 @@ public class UzivatelDetailsService implements UserDetailsService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Uzivatel u = uzivatelRepo.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Uživatel nenalezen: " + email));

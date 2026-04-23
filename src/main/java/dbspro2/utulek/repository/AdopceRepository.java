@@ -12,4 +12,8 @@ public interface AdopceRepository extends JpaRepository<Adopce, Integer> {
     List<Adopce> findByZvire_IdZvire(Integer idZvire);
 
     boolean existsByZvire_IdZvireAndStav(Integer idZvire, String stav);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query(value = "CALL sp_expiruj_stare_adopce()", nativeQuery = true)
+    void expirujStareAdopceNativne();
 }

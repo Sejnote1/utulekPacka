@@ -43,6 +43,8 @@
     <div class="card">
         <form th:action="@{/uzivatele/ulozit}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="idUzivatel" th:value="${uzivatel.idUzivatel}"/>
+            <!-- Stávající hash se přenese jako záloha, pokud uživatel nevyplní nové heslo -->
+            <input type="hidden" name="existingHash" th:value="${uzivatel.hesloHash}"/>
             <div class="form-grid">
                 <div class="form-group">
                     <label>Jméno <span class="req">*</span></label>
@@ -59,7 +61,7 @@
                 <div class="form-group full">
                     <label>Heslo <span th:if="${uzivatel.idUzivatel == null}" class="req">*</span>
                         <span th:unless="${uzivatel.idUzivatel == null}">(ponechte prázdné = beze změny)</span></label>
-                    <input type="password" name="hesloHash" placeholder="••••••••"
+                    <input type="password" name="noveHeslo" placeholder="••••••••"
                            th:required="${uzivatel.idUzivatel == null}"/>
                     <span class="note">Heslo bude automaticky zahashováno.</span>
                 </div>

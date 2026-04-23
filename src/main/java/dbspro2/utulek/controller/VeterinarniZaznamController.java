@@ -16,6 +16,7 @@ import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/zaznamy")
+@org.springframework.transaction.annotation.Transactional
 public class VeterinarniZaznamController {
 
     private final VeterinarniZaznamService zaznamService;

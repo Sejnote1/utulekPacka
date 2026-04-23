@@ -38,8 +38,18 @@ public class DataInit {
                 Role admin     = roleRepo.findByNazev("Administrátor").orElseThrow();
 
                 userRepo.save(new Uzivatel("Jan",   "Novák",      "recepce@example.com", encoder.encode("heslo123"), recepce));
-                userRepo.save(new Uzivatel("Petra", "Svobodová",  "vet@example.com",     encoder.encode("heslo123"), veterinar));
+                userRepo.save(new Uzivatel("Greg", "Mouse MD.",  "drmouse@mouse.md",     encoder.encode("vicodin"), veterinar));
                 userRepo.save(new Uzivatel("Admin", "Admin",      "admin@example.com",   encoder.encode("admin123"), admin));
+            } else {
+                // Vždy zkontroluj a oprav hesla která nevypadají jako platný BCrypt hash
+                userRepo.findAll().forEach(u -> {
+                    String hash = u.getHesloHash();
+                    if (hash == null || hash.isBlank() || !hash.startsWith("$2a$")) {
+                        u.setHesloHash(encoder.encode("heslo123"));
+                        userRepo.save(u);
+                        System.out.println("🔒 Resetováno heslo pro: " + u.getEmail() + " → heslo123");
+                    }
+                });
             }
 
             // ===== STATUSY ZVÍŘETE =====

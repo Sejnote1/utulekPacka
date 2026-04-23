@@ -9,6 +9,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/zajemci")
+@org.springframework.transaction.annotation.Transactional
 public class ZajemceController {
 
     private final ZajemceService zajemceService;
@@ -32,6 +33,9 @@ public class ZajemceController {
     public String detail(@PathVariable Integer id, Model model) {
         model.addAttribute("zajemce", zajemceService.getById(id)
                 .orElseThrow(() -> new RuntimeException("Zájemce nenalezen")));
+        
+        zajemceService.getSkore(id).ifPresent(skore -> model.addAttribute("skore", skore));
+        
         return "zajemci/detail";
     }
 

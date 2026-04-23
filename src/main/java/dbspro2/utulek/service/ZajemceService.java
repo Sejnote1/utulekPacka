@@ -11,9 +11,11 @@ import java.util.Optional;
 public class ZajemceService {
 
     private final ZajemceRepository zajemceRepository;
+    private final dbspro2.utulek.repository.ZajemceSkoreRepository skoreRepository;
 
-    public ZajemceService(ZajemceRepository zajemceRepository) {
+    public ZajemceService(ZajemceRepository zajemceRepository, dbspro2.utulek.repository.ZajemceSkoreRepository skoreRepository) {
         this.zajemceRepository = zajemceRepository;
+        this.skoreRepository = skoreRepository;
     }
 
     public List<Zajemce> getAll() {
@@ -39,5 +41,9 @@ public class ZajemceService {
     @org.springframework.transaction.annotation.Transactional
     public void anonymizuj(Integer id) {
         zajemceRepository.anonymizujZajemceNativne(id);
+    }
+
+    public Optional<dbspro2.utulek.model.ZajemceSkore> getSkore(Integer id) {
+        return skoreRepository.findById(id);
     }
 }

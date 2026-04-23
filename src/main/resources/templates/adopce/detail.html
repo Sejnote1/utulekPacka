@@ -87,6 +87,14 @@
         <div class="info-row"><span class="key">Datum schválení</span><span th:text="${adopce.datumSchvaleni ?: '–'}">-</span></div>
     </div>
 
+    <!-- Důvody zamítnutí – jen když je zamítnuta -->
+    <div class="card" th:if="${adopce.stav.contains('Zamítnuta') and !#lists.isEmpty(adopce.zamitnuti)}">
+        <h2>❌ Důvody zamítnutí</h2>
+        <ul style="margin-left: 20px; font-size: 14px; color: #fca5a5;">
+            <li th:each="z : ${adopce.zamitnuti}" th:text="${z.duvod?.popis}">-</li>
+        </ul>
+    </div>
+
     <!-- Akce – jen když probíhá -->
     <div th:if="${adopce.stav == 'Probíhá'}">
         <div class="card" style="margin-bottom: 16px;">

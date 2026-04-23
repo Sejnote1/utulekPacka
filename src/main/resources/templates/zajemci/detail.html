@@ -43,6 +43,13 @@
         <div class="info-row"><span class="key">Typ bydlení</span><span th:text="${zajemce.typBydleni}">-</span></div>
         <div class="info-row"><span class="key">Má jiná zvířata</span><span th:text="${zajemce.maJinaZvirata ? 'Ano' : 'Ne'}">-</span></div>
     </div>
+    
+    <div class="card" th:if="${skore != null}">
+        <h2>📊 Adopční skóre (DBS2 Nativní View)</h2>
+        <div class="info-row"><span class="key">Celkem žádostí</span><span th:text="${skore.celkemZadosti}">-</span></div>
+        <div class="info-row"><span class="key" style="color: #86efac;">Schválené adopce</span><span th:text="${skore.schvalenoPocet}">-</span></div>
+        <div class="info-row"><span class="key" style="color: #fca5a5;">Zamítnuté adopce</span><span th:text="${skore.zamitnutoPocet}">-</span></div>
+    </div>
     <div class="actions">
         <a th:href="@{/zajemci/{id}/upravit(id=${zajemce.idZajemce})}" class="btn-secondary">✏️ Upravit</a>
         <form th:action="@{/zajemci/{id}/smazat(id=${zajemce.idZajemce})}" method="post">

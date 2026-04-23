@@ -20,10 +20,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/verejne-adopce", "/uzivatele/*/avatar").permitAll()
                 .requestMatchers("/admin/**", "/uzivatele/**").hasAuthority("Administrátor")
-                .requestMatchers("/zvirata/novy", "/zvirata/ulozit", "/zvirata/*/upravit").hasAnyAuthority("Recepční", "Administrátor")
+                // Přidání/úprava zvířat: pouze Veterinář a Administrátor (Recepční NEMŮŽE)
+                .requestMatchers("/zvirata/novy", "/zvirata/ulozit", "/zvirata/*/upravit").hasAnyAuthority("Veterinář", "Administrátor")
+                // Veterinární záznamy: pouze Veterinář a Administrátor
                 .requestMatchers("/zaznamy/**").hasAnyAuthority("Veterinář", "Administrátor")
+                // Adopce a zájemci: Recepční, Veterinář, Administrátor (všichni přihlášení)
                 .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex

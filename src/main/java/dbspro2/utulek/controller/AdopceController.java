@@ -13,6 +13,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/adopce")
+@org.springframework.transaction.annotation.Transactional
 public class AdopceController {
 
     private final AdopceService adopceService;

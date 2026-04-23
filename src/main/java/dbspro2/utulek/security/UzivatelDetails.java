@@ -16,6 +16,10 @@ public class UzivatelDetails implements UserDetails {
         this.uzivatel = uzivatel;
     }
 
+    public Uzivatel getUzivatel() {
+        return uzivatel;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(uzivatel.getRole().getNazev()));

@@ -55,8 +55,7 @@ public class Zvire {
     @Column(name = "specifika", columnDefinition = "jsonb")
     private String specifika;
 
-    @Lob
-    @Column(name = "obrazek")
+    @Column(name = "obrazek", columnDefinition = "bytea")
     private byte[] obrazek;
 
     public Integer getIdZvire() {

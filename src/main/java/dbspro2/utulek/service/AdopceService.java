@@ -106,4 +106,9 @@ public class AdopceService {
     public void delete(Integer id) {
         adopceRepository.deleteById(id);
     }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void expirujStareAdopce() {
+        adopceRepository.expirujStareAdopceNativne();
+    }
 }

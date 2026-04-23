@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Můj profil – Zdravá Packa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+        nav {
+            background: rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 0 32px;
+            display: flex; align-items: center; justify-content: space-between; height: 64px;
+        }
+        .nav-brand { font-size: 20px; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 10px; }
+        .nav-links { display: flex; gap: 4px; }
+        .nav-links a { color: rgba(255,255,255,0.65); text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.1); color: #fff; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .nav-user { color: rgba(255,255,255,0.5); font-size: 13px; }
+        .btn-logout { padding: 7px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 13px; text-decoration: none; transition: all 0.2s; }
+        .btn-logout:hover { background: rgba(233,69,96,0.2); border-color: #e94560; color: #ff8fa3; }
+        main { padding: 40px 32px; max-width: 600px; margin: 0 auto; }
+        h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+        .subtitle { color: rgba(255,255,255,0.45); font-size: 14px; margin-bottom: 36px; }
+        .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 32px; margin-bottom: 24px; }
+        .avatar-section { display: flex; align-items: center; gap: 24px; margin-bottom: 32px; }
+        .avatar-circle {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: #334155; display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: bold; color: #fff; flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.15);
+        }
+        .avatar-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.15); }
+        .avatar-info h3 { font-size: 18px; font-weight: 600; }
+        .avatar-info p { color: rgba(255,255,255,0.4); font-size: 13px; margin-top: 4px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 13px; color: rgba(255,255,255,0.55); margin-bottom: 6px; }
+        input[type=password], input[type=file] {
+            width: 100%; padding: 11px 14px;
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 9px; color: #e2e8f0; font-size: 14px; outline: none;
+        }
+        input:focus { border-color: #e94560; }
+        .note { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 5px; }
+        .divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 24px 0; }
+        .btn-primary { background: linear-gradient(135deg, #e94560, #c62a47); color: #fff; border: none; padding: 12px 28px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-back { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 14px; display: inline-block; margin-bottom: 24px; }
+        .btn-back:hover { color: #fff; }
+        .alert-ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 12px 16px; margin-bottom: 24px; color: #86efac; font-size: 14px; }
+        .alert-err { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 10px; padding: 12px 16px; margin-bottom: 24px; color: #fca5a5; font-size: 14px; }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 14px; }
+        .info-row .lbl { color: rgba(255,255,255,0.4); }
+        .info-row .val { color: #f1f5f9; font-weight: 500; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-brand">🐾 Zdravá Packa</div>
+    <div class="nav-links">
+        <a th:href="@{/zvirata}">Zvířata</a>
+        <a th:href="@{/adopce}">Adopce</a>
+        <a th:href="@{/zajemci}">Zájemci</a>
+        <a th:href="@{/uzivatele}" sec:authorize="hasAuthority('Administrátor')">Uživatelé</a>
+        <a th:href="@{/admin}" sec:authorize="hasAuthority('Administrátor')">Dashboard</a>
+        <a th:href="@{/profil}" class="active">Můj profil</a>
+    </div>
+    <div class="nav-right">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <img th:if="${#authentication.principal.uzivatel.avatar != null}" th:src="@{/uzivatele/{id}/avatar(id=${#authentication.principal.uzivatel.idUzivatel})}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" />
+            <div th:unless="${#authentication.principal.uzivatel.avatar != null}" style="width: 32px; height: 32px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff;" th:text="${#strings.substring(#authentication.principal.uzivatel.jmeno,0,1) + #strings.substring(#authentication.principal.uzivatel.prijmeni,0,1)}"></div>
+            <span class="nav-user" sec:authentication="name" style="margin-left: 2px;">uživatel</span>
+        </div>
+        <a href="/logout" class="btn-logout">Odhlásit</a>
+    </div>
+</nav>
+<main>
+    <a th:href="@{/zvirata}" class="btn-back">← Zpět</a>
+    <h1>👤 Můj profil</h1>
+    <p class="subtitle">Upravte si svůj profilový obrázek nebo heslo.</p>
+
+    <div class="alert-ok" th:if="${zprava}" th:text="${zprava}"></div>
+    <div class="alert-err" th:if="${chyba}" th:text="${chyba}"></div>
+
+    <!-- Info karta -->
+    <div class="card">
+        <div class="avatar-section">
+            <img th:if="${uzivatel.avatar != null}"
+                 th:src="@{/uzivatele/{id}/avatar(id=${uzivatel.idUzivatel})}"
+                 class="avatar-img" alt="Avatar"/>
+            <div th:unless="${uzivatel.avatar != null}" class="avatar-circle"
+                 th:text="${#strings.substring(uzivatel.jmeno,0,1) + #strings.substring(uzivatel.prijmeni,0,1)}">??</div>
+            <div class="avatar-info">
+                <h3 th:text="${uzivatel.jmeno + ' ' + uzivatel.prijmeni}">Jméno Příjmení</h3>
+                <p th:text="${uzivatel.email}">email</p>
+                <p th:text="${uzivatel.role.nazev}" style="margin-top: 2px; color: rgba(255,255,255,0.3);"></p>
+            </div>
+        </div>
+        <div class="info-row">
+            <span class="lbl">Jméno</span>
+            <span class="val" th:text="${uzivatel.jmeno + ' ' + uzivatel.prijmeni}"></span>
+        </div>
+        <div class="info-row">
+            <span class="lbl">Email (přihlašovací jméno)</span>
+            <span class="val" th:text="${uzivatel.email}"></span>
+        </div>
+        <div class="info-row" style="border-bottom: none;">
+            <span class="lbl">Role</span>
+            <span class="val" th:text="${uzivatel.role.nazev}"></span>
+        </div>
+        <p class="note" style="margin-top: 12px;">Email a roli může měnit pouze administrátor.</p>
+    </div>
+
+    <!-- Editační formulář -->
+    <div class="card">
+        <h2 style="font-size: 17px; margin-bottom: 20px;">🔧 Změnit heslo nebo avatar</h2>
+        <form th:action="@{/profil/ulozit}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="existingHash" th:value="${uzivatel.hesloHash}"/>
+
+            <div class="form-group">
+                <label>Nové heslo (ponechte prázdné = beze změny)</label>
+                <input type="password" name="noveHeslo" placeholder="••••••••"/>
+                <p class="note">Minimálně 6 znaků. Heslo bude zahashováno.</p>
+            </div>
+
+            <hr class="divider"/>
+
+            <div class="form-group">
+                <label>Profilový obrázek</label>
+                <input type="file" name="avatar_file" accept="image/*"/>
+                <p class="note">Podporované formáty: JPG, PNG, GIF. Maximálně ~2 MB.</p>
+            </div>
+
+            <button type="submit" class="btn-primary">💾 Uložit změny</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

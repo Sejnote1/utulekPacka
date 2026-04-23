@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Chyba – Zdravá Packa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        nav {
+            background: rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 0 32px;
+            display: flex; align-items: center; justify-content: space-between; height: 64px;
+            flex-shrink: 0;
+        }
+        .nav-brand { font-size: 20px; font-weight: 700; color: #f8fafc; }
+        .nav-links { display: flex; gap: 4px; }
+        .nav-links a { color: rgba(255,255,255,0.65); text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 14px; }
+        .nav-links a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-logout { padding: 7px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: rgba(255,255,255,0.7); font-size: 13px; text-decoration: none; }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 32px;
+        }
+        .error-card { text-align: center; max-width: 560px; }
+
+        .error-emoji { font-size: 72px; display: block; margin-bottom: 16px; animation: bounce 2s infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .error-code {
+            font-size: 110px;
+            font-weight: 900;
+            line-height: 1;
+            background: linear-gradient(135deg, #e94560, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -4px;
+            margin-bottom: 4px;
+        }
+        .divider { width: 56px; height: 3px; background: linear-gradient(90deg, #e94560, #7c3aed); border-radius: 2px; margin: 16px auto 24px; }
+        h1 { font-size: 26px; font-weight: 700; margin-bottom: 14px; color: #f8fafc; }
+        .desc { color: rgba(255,255,255,0.45); font-size: 15px; line-height: 1.7; margin-bottom: 12px; }
+        .tech-details {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 16px 0 32px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.3);
+            text-align: left;
+            font-family: monospace;
+        }
+        .action-bar { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn-primary {
+            background: linear-gradient(135deg, #e94560, #c62a47);
+            color: #fff; border: none;
+            padding: 12px 28px; border-radius: 10px;
+            font-size: 15px; font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-secondary {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.75);
+            padding: 12px 24px; border-radius: 10px;
+            font-size: 15px; text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-brand">🐾 Zdravá Packa</div>
+    <div class="nav-links">
+        <a href="/zvirata">Zvířata</a>
+        <a href="/adopce">Adopce</a>
+        <a href="/zajemci">Zájemci</a>
+    </div>
+    <a href="/logout" class="btn-logout" sec:authorize="isAuthenticated()">Odhlásit</a>
+</nav>
+<main>
+    <div class="error-card">
+        <span class="error-emoji" th:text="${status == 403 ? '🔒' : status == 404 ? '🔍' : '⚠️'}">⚠️</span>
+        <div class="error-code" th:text="${status}">500</div>
+        <div class="divider"></div>
+        <h1 th:text="${status == 403 ? 'Přístup odepřen' : status == 404 ? 'Stránka nenalezena' : 'Něco se pokazilo'}">Chyba</h1>
+        <p class="desc" th:text="${status == 403 ? 'Na tuto stránku nemáš oprávnění. Pokud si myslíš, že jde o chybu, obrať se na administrátora.' :
+                                   status == 404 ? 'Stránka, kterou hledáš, neexistuje nebo byla přesunuta.' :
+                                   'Nastala neočekávaná chyba. Zkus to znovu nebo se vrať zpět.'}">Chybový popis</p>
+        <div class="tech-details" th:if="${error != null}">
+            <span th:text="'Chyba: ' + ${error}"></span>
+        </div>
+        <div class="action-bar">
+            <a href="/zvirata" class="btn-primary">🏠 Hlavní stránka</a>
+            <a href="javascript:history.back()" class="btn-secondary">← Zpět</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

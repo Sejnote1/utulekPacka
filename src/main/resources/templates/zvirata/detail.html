@@ -58,9 +58,14 @@
         <a th:href="@{/zajemci}">Zájemci</a>
         <a th:href="@{/uzivatele}" sec:authorize="hasAuthority('Administrátor')">Uživatelé</a>
         <a th:href="@{/admin}" sec:authorize="hasAuthority('Administrátor')">Dashboard</a>
+        <a th:href="@{/profil}">Můj profil</a>
     </div>
     <div class="nav-right">
-        <span class="nav-user" sec:authentication="name">uživatel</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <img th:if="${#authentication.principal.uzivatel.avatar != null}" th:src="@{/uzivatele/{id}/avatar(id=${#authentication.principal.uzivatel.idUzivatel})}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" />
+            <div th:unless="${#authentication.principal.uzivatel.avatar != null}" style="width: 32px; height: 32px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff;" th:text="${#strings.substring(#authentication.principal.uzivatel.jmeno,0,1) + #strings.substring(#authentication.principal.uzivatel.prijmeni,0,1)}"></div>
+            <span class="nav-user" sec:authentication="name" style="margin-left: 2px;">uživatel</span>
+        </div>
         <a href="/logout" class="btn-logout">Odhlásit</a>
     </div>
 </nav>
@@ -95,7 +100,12 @@
             <div class="info-row"><span class="key">Druh</span><span class="val" th:text="${zvire.plemeno?.druh?.nazev}">-</span></div>
             <div class="info-row"><span class="key">Plemeno</span><span class="val" th:text="${zvire.plemeno?.nazev}">-</span></div>
             <div class="info-row"><span class="key">Pohlaví</span><span class="val" th:text="${zvire.pohlavi == 'M' ? 'Samec' : (zvire.pohlavi == 'F' ? 'Samice' : '-')}">-</span></div>
-            <div class="info-row"><span class="key">Datum narození</span><span class="val" th:text="${zvire.datumNarozeni}">-</span></div>
+            <div class="info-row"><span class="key">Datum narození</span>
+                <span class="val">
+                    <span th:text="${zvire.datumNarozeni}">-</span> 
+                    <span th:if="${vekMesice != null and vekMesice >= 0}" style="color: rgba(255,255,255,0.4); font-size: 12px;">(Věk: <span th:text="${vekMesice}"></span> měs.)</span>
+                </span>
+            </div>
             <div class="info-row"><span class="key">Datum přijetí</span><span class="val" th:text="${zvire.datumPrijeti}">-</span></div>
             <div class="info-row"><span class="key">Povaha</span><span class="val" th:text="${zvire.povaha}">-</span></div>
             <div class="info-row" th:if="${zvire.specifika != null and !zvire.specifika.isBlank()}"><span class="key">Specifika (JSON)</span><span class="val" th:text="${zvire.specifika}">-</span></div>
@@ -110,6 +120,14 @@
                             th:selected="${s.idStatus == zvire.status?.idStatus}"></option>
                 </select>
                 <button type="submit" class="btn-primary">Uložit status</button>
+            </form>
+        </div>
+
+        <!-- Upravit / Smazat – pouze Veterinář a Administrátor -->
+        <div class="card" sec:authorize="hasAnyAuthority('Veterinář','Administrátor')" style="display:flex; gap:12px; align-items:center;">
+            <a th:href="@{/zvirata/{id}/upravit(id=${zvire.idZvire})}" class="btn-primary" style="text-decoration:none;">✏️ Upravit zvíře</a>
+            <form th:action="@{/zvirata/{id}/smazat(id=${zvire.idZvire})}" method="post" style="display:inline">
+                <button type="submit" class="btn-danger" onclick="return confirm('Opravdu smazat toto zvíře?')">🗑️ Smazat</button>
             </form>
         </div>
     </div>

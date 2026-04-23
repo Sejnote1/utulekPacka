@@ -31,8 +31,7 @@ public class Uzivatel {
     @OneToMany(mappedBy = "uzivatel", fetch = FetchType.LAZY)
     private List<VeterinarniZaznam> zaznamy;
 
-    @Lob
-    @Column(name = "avatar")
+    @Column(name = "avatar", columnDefinition = "bytea")
     private byte[] avatar;
 
     // ===== Výchozí konstruktor =====

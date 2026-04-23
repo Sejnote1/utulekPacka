@@ -12,6 +12,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/zvirata")
+@org.springframework.transaction.annotation.Transactional
 public class ZvireController {
 
     private final ZvireService zvireService;
@@ -60,7 +61,11 @@ public class ZvireController {
     public String detail(@PathVariable Integer id, Model model) {
         Zvire zvire = zvireService.getById(id)
                 .orElseThrow(() -> new RuntimeException("Zvíře nenalezeno"));
+        
+        Integer vekMesice = zvireService.getVekMesice(id);
+        
         model.addAttribute("zvire", zvire);
+        model.addAttribute("vekMesice", vekMesice);
         model.addAttribute("statusy", statusRepository.findAll());
         return "zvirata/detail";
     }

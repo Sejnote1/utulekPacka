@@ -56,4 +56,17 @@ public class ZvireService {
         zvire.setStatus(status);
         return zvireRepository.save(zvire);
     }
+
+    public Integer getVekMesice(Integer idZvire) {
+        return zvireRepository.getVekMesiceNativne(idZvire);
+    }
+
+    public Integer getPocetZviratDruhu(String druh) {
+        return zvireRepository.getPocetZviratDruhuNativne(druh);
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void zmenStatusHromadne(Integer idStare, Integer idNove) {
+        zvireRepository.zmenStatusHromadneNativne(idStare, idNove);
+    }
 }

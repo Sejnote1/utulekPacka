@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
@@ -62,9 +62,14 @@
         <a th:href="@{/zajemci}">Zájemci</a>
         <a th:href="@{/uzivatele}" sec:authorize="hasAuthority('Administrátor')">Uživatelé</a>
         <a th:href="@{/admin}" class="active" sec:authorize="hasAuthority('Administrátor')">Dashboard</a>
+        <a th:href="@{/profil}">Můj profil</a>
     </div>
     <div class="nav-right">
-        <span class="nav-user" sec:authentication="name">uživatel</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <img th:if="${#authentication.principal.uzivatel.avatar != null}" th:src="@{/uzivatele/{id}/avatar(id=${#authentication.principal.uzivatel.idUzivatel})}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" />
+            <div th:unless="${#authentication.principal.uzivatel.avatar != null}" style="width: 32px; height: 32px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff;" th:text="${#strings.substring(#authentication.principal.uzivatel.jmeno,0,1) + #strings.substring(#authentication.principal.uzivatel.prijmeni,0,1)}"></div>
+            <span class="nav-user" sec:authentication="name" style="margin-left: 2px;">uživatel</span>
+        </div>
         <a href="/logout" class="btn-logout">Odhlásit</a>
     </div>
 </nav>
@@ -115,6 +120,54 @@
             <h3>Správa uživatelů</h3>
             <p>Vytváření a úprava účtů</p>
         </a>
+    </div>
+    
+    <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <!-- Nativní Makra -->
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 24px;">
+            <h2 style="font-size: 18px; margin-bottom: 16px;">⚡ Nativní Databázová Makra</h2>
+            <div style="display: flex; gap: 10px; flex-direction: column;">
+                <form th:action="@{/admin/hromadne-k-adopci}" method="post">
+                    <button type="submit" style="width: 100%; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); color: #93c5fd; padding: 12px; border-radius: 10px; cursor: pointer; text-align: left; font-size: 14px;" onclick="return confirm('Spustit proceduru sp_zmen_status_hromadne?')">
+                        <strong>Převést přijaté k adopci</strong><br/><span style="font-size: 12px; color: rgba(255,255,255,0.4);">sp_zmen_status_hromadne</span>
+                    </button>
+                </form>
+                <form th:action="@{/admin/expiruj-adopce}" method="post">
+                    <button type="submit" style="width: 100%; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; padding: 12px; border-radius: 10px; cursor: pointer; text-align: left; font-size: 14px;" onclick="return confirm('Spustit proceduru sp_expiruj_stare_adopce?')">
+                        <strong>Zamítnout staré adopce (>30d)</strong><br/><span style="font-size: 12px; color: rgba(255,255,255,0.4);">sp_expiruj_stare_adopce</span>
+                    </button>
+                </form>
+            </div>
+            
+            <h2 style="font-size: 18px; margin-top: 32px; margin-bottom: 16px;">🐾 Detaily dle druhu</h2>
+            <div style="color: rgba(255,255,255,0.6); font-size: 14px;">
+                <p>Počet evidovaných psů: <strong style="color: #fff;" th:text="${pocetPsu}">0</strong></p>
+                <p>Počet evidovaných koček: <strong style="color: #fff;" th:text="${pocetKocek}">0</strong></p>
+                <p style="font-size: 11px; margin-top: 4px; color: rgba(255,255,255,0.3);">(Počítáno nativní funkcí fn_pocet_zvirat_druhu)</p>
+            </div>
+        </div>
+
+        <!-- Historie zvířat (View) -->
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 24px; overflow-x: auto;">
+            <h2 style="font-size: 18px; margin-bottom: 6px;">🩺 Historie ošetřování</h2>
+            <p style="font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 16px;">Zdroj: View v_detail_zvirat_historie</p>
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5);">
+                        <th style="padding: 8px;">Jméno</th>
+                        <th style="padding: 8px;">Stav</th>
+                        <th style="padding: 8px; text-align: center;">Počet vet. návštěv</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="h : ${zvirataHistorie}" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style="padding: 8px;" th:text="${h.jmeno}">-</td>
+                        <td style="padding: 8px;" th:text="${h.aktualniStav}">-</td>
+                        <td style="padding: 8px; text-align: center;" th:text="${h.pocetVeterinarnichVysetreni}">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
 </body>

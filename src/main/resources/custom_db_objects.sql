@@ -58,7 +58,8 @@ BEGIN
     FROM zvire z
     JOIN plemeno p ON z.id_plemeno = p.id_plemeno
     JOIN druh d ON p.id_druh = d.id_druh
-    WHERE d.nazev = p_nazev_druhu AND z.id_status != (SELECT id_status FROM status_zvirete WHERE stav = 'Adoptováno');
+    JOIN status_zvirete sz ON z.id_status = sz.id_status
+    WHERE d.nazev = p_nazev_druhu AND sz.stav != 'Adoptováno';
     RETURN pocet;
 END;
 $$ LANGUAGE plpgsql;

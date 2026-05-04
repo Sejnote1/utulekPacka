@@ -25,7 +25,7 @@ public class ZvireDetailHistorie {
     private String aktualniStav;
 
     @Column(name = "pocet_veterinarnich_vysetreni")
-    private Integer pocetVeterinarnichVysetreni;
+    private Long pocetVeterinarnichVysetreni;
 
     public Integer getIdZvire() {
         return idZvire;
@@ -43,7 +43,7 @@ public class ZvireDetailHistorie {
         return aktualniStav;
     }
 
-    public Integer getPocetVeterinarnichVysetreni() {
+    public Long getPocetVeterinarnichVysetreni() {
         return pocetVeterinarnichVysetreni;
     }
 }

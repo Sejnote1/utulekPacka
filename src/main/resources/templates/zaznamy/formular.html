@@ -44,7 +44,7 @@
             Formulář posílá parametry přímo jako @RequestParam – žádné model-binding problemy.
             idZvire předáno jako hidden field, popis a datum jako plain inputs.
         -->
-        <form th:action="@{/zaznamy/ulozit}" method="post">
+        <form th:action="@{/zaznamy/ulozit}" method="post" onsubmit="document.getElementById('submitBtn').disabled = true; document.getElementById('submitBtn').innerText = 'Ukládám...';">
             <!-- Předáme ID zvířete jako plain param -->
             <input type="hidden" name="idZvire" th:value="${zvire.idZvire}"/>
 
@@ -57,7 +57,7 @@
                 <textarea name="popis" required placeholder="Popište prohlídku, diagnózu, léčbu, doporučení..."></textarea>
             </div>
             <div class="form-actions">
-                <button type="submit" class="btn-primary">💾 Uložit záznam</button>
+                <button type="submit" id="submitBtn" class="btn-primary">💾 Uložit záznam</button>
                 <a th:href="@{/zvirata/{id}(id=${zvire.idZvire})}" class="btn-secondary">Zrušit</a>
             </div>
         </form>

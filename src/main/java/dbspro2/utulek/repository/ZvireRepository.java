@@ -22,7 +22,6 @@ public interface ZvireRepository extends JpaRepository<Zvire, Integer> {
     @org.springframework.data.jpa.repository.Query(value = "SELECT fn_pocet_zvirat_druhu(:druh)", nativeQuery = true)
     Integer getPocetZviratDruhuNativne(String druh);
 
-    @org.springframework.data.jpa.repository.Modifying
-    @org.springframework.data.jpa.repository.Query(value = "CALL sp_zmen_status_hromadne(:idStare, :idNove)", nativeQuery = true)
-    void zmenStatusHromadneNativne(Integer idStare, Integer idNove);
+    @org.springframework.data.jpa.repository.query.Procedure(procedureName = "sp_zmen_status_hromadne")
+    void zmenStatusHromadneNativne(@org.springframework.data.repository.query.Param("p_id_stare") Integer p_id_stare, @org.springframework.data.repository.query.Param("p_id_nove") Integer p_id_nove);
 }

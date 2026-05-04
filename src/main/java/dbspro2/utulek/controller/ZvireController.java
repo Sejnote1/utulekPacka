@@ -106,6 +106,12 @@ public class ZvireController {
                     zvire.setObrazek(old.getObrazek());
                 }
             }
+            
+            // Fix: Postgres jsonb nemůže dostat prázdný string "", musí to být null
+            if (zvire.getSpecifika() != null && zvire.getSpecifika().isBlank()) {
+                zvire.setSpecifika(null);
+            }
+            
             zvireService.save(zvire);
             ra.addFlashAttribute("zprava", "Zvíře bylo úspěšně uloženo.");
         } catch (Exception e) {

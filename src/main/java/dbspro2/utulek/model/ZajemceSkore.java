@@ -16,27 +16,27 @@ public class ZajemceSkore {
     private Integer idZajemce;
 
     @Column(name = "celkem_zadosti")
-    private Integer celkemZadosti;
+    private Long celkemZadosti;
 
     @Column(name = "schvaleno_pocet")
-    private Integer schvalenoPocet;
+    private Long schvalenoPocet;
 
     @Column(name = "zamitnuto_pocet")
-    private Integer zamitnutoPocet;
+    private Long zamitnutoPocet;
 
     public Integer getIdZajemce() {
         return idZajemce;
     }
 
-    public Integer getCelkemZadosti() {
+    public Long getCelkemZadosti() {
         return celkemZadosti;
     }
 
-    public Integer getSchvalenoPocet() {
+    public Long getSchvalenoPocet() {
         return schvalenoPocet;
     }
 
-    public Integer getZamitnutoPocet() {
+    public Long getZamitnutoPocet() {
         return zamitnutoPocet;
     }
 }

@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Configuration
 public class DataInit {
 
@@ -96,16 +99,77 @@ public class DataInit {
                 duvodRepo.save(new DuvodZamitnuti("Jiný důvod"));
             }
 
-            // ===== NAČTENÍ A SPUŠTĚNÍ NATIVNÍCH SQL OBJEKTŮ (Triggery, Views) =====
+            // ===== NAČTENÍ A SPUŠTĚNÍ NATIVNÍCH SQL OBJEKTŮ (Views, Functions, Procedures, Triggers) =====
+            // Skript se rozdělí na jednotlivé příkazy s respektováním $$ bloků PL/pgSQL
+            // a každý se spustí samostatně – funguje spolehlivě na všech verzích JDBC driveru.
             try {
-                org.springframework.core.io.Resource resource = new org.springframework.core.io.ClassPathResource("custom_db_objects.sql");
-                String sql = new String(resource.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
-                // Rozdělíme ručně přes speciální oddělovač pokud jdbc neumí bloky vcelku, ale Postgres driver obvykle umí spustit celý skript.
-                jdbcTemplate.execute(sql);
-                System.out.println("Všechny SQL Views, Functions, Procedures a Triggers byly nahrány.");
+                org.springframework.core.io.Resource resource =
+                        new org.springframework.core.io.ClassPathResource("custom_db_objects.sql");
+                String sql = new String(resource.getInputStream().readAllBytes(),
+                        java.nio.charset.StandardCharsets.UTF_8);
+
+                List<String> statements = extractStatements(sql);
+                int ok = 0, fail = 0;
+                for (String stmt : statements) {
+                    try {
+                        jdbcTemplate.execute(stmt);
+                        ok++;
+                    } catch (Exception ex) {
+                        fail++;
+                        System.err.println("⚠ SQL objekt selhal: " + ex.getMessage().split("\n")[0]);
+                    }
+                }
+                System.out.println("✅ SQL objekty: " + ok + " úspěšně, " + fail + " selhalo.");
             } catch (Exception e) {
-                System.err.println("Chyba při nahrávání SQL datových objektů: " + e.getMessage());
+                System.err.println("❌ Chyba při čtení custom_db_objects.sql: " + e.getMessage());
             }
         };
+    }
+
+    /**
+     * Rozdělí SQL skript na jednotlivé příkazy podle středníku (;),
+     * přičemž správně ignoruje středníky uvnitř PL/pgSQL bloků $$ ... $$.
+     * Přeskočí řádky komentářů (--).
+     */
+    private static List<String> extractStatements(String script) {
+        List<String> result = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean inDollarQuote = false;
+        int i = 0;
+
+        while (i < script.length()) {
+            // Detekce začátku/konce $$ bloku
+            if (i + 1 < script.length()
+                    && script.charAt(i) == '$'
+                    && script.charAt(i + 1) == '$') {
+                inDollarQuote = !inDollarQuote;
+                current.append("$$");
+                i += 2;
+                continue;
+            }
+
+            char c = script.charAt(i);
+
+            // Středník mimo $$ blok = konec příkazu
+            if (c == ';' && !inDollarQuote) {
+                String stmt = current.toString().trim();
+                // Přeskočit prázdné příkazy a řádkové komentáře
+                if (!stmt.isEmpty() && !stmt.startsWith("--")) {
+                    result.add(stmt + ";");
+                }
+                current = new StringBuilder();
+            } else {
+                current.append(c);
+            }
+            i++;
+        }
+
+        // Zbytek za posledním středníkem (např. bez ukončujícího ;)
+        String last = current.toString().trim();
+        if (!last.isEmpty() && !last.startsWith("--")) {
+            result.add(last);
+        }
+
+        return result;
     }
 }
